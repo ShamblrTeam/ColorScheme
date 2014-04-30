@@ -10,23 +10,20 @@ from numpy import array
 import pytumblr
 from pprint import pprint as pp
 import psycopg2
+from random import sample
 
 # fill this in first
 credentials = json.loads(open('tumblr_credentials.json', 'r').read())
 tumblr = pytumblr.TumblrRestClient(credentials["consumer_key"],credentials["consumer_secret"],credentials["oauth_token"],credentials["oauth_token_secret"])
 
-def get_points(img):
-	points = []
-	w, h = img.size
-	for count, color in img.getcolors(w * h):
-		points.append([color[0],color[1],color[2]])
-	return points
-
 rtoh = lambda rgb: '%s' % ''.join(('%02x' % p for p in rgb))
 
-def colorz(img, n=10, trim=32):
+def colorz(img, n=10, trim=32, sample_size=10000):
+	img.thumbnail((200, 200))
 	coords = [(x,y) for x in range(img.size[0]) for y in range(img.size[1])]
-	
+	coords = sample(coords, sample_size)
+	points = []	
+
 	for coord in coords:
 		rgb = img.getpixel(coord)
 		pix = (
@@ -34,12 +31,9 @@ def colorz(img, n=10, trim=32):
 			(rgb[1]//trim)*trim,
 			(rgb[2]//trim)*trim
 		)
-		img.putpixel(coord,pix)
+		points.append(pix)
 	
-	img.thumbnail((200, 200))
-	w, h = img.size
-
-	points = array(get_points(img))
+	points = array(points)
 	clusters = sci.kmeans(points, n)[0]
 	rgbs = [map(int, c) for c in clusters]
 	
