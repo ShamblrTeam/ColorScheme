@@ -1,5 +1,29 @@
 {% extends "layout.html" %}
 {% block head %} 
-	The entered blog is {{ blog }}
+	The entered blog is {{ blog }} <br>
+	{% if not found %}
+	The blog is not in our database :<
+	{% else %}
+	For {{ target[0] }}, the primary colors are:
+	<ul>
+	{% for number in range(1,10) %}
+		<img src=http://connorgreenwell.com:3000/color/{{ target[number] }}.png?x=256&y=100>
+	{% endfor %}
+	</ul>
+	Similar Blogs are: <br>
+	<!-- There is no break or continue in jinja so we will filter using the techiniques in the api docs-->
+	{% for blog in results[0:10] if not (blog[0] == target[0])%}
+		The blog at {{ blog[0] }} <br>
+		<ul>
+		{% for item in range(1,10) %}
+			<img src=http://connorgreenwell.com:3000/color/{{ blog[item] }}.png?x=256&y=100>
+		{% if loop.last %}
+		</ul>
+		{% endif %}
 
+		{% endfor %}
+
+	{% endfor %}
+	{% endif %}
+	
 {% endblock %}
