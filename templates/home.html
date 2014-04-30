@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block head %} 
+        <h1>Please enter a blog name</h1>
+		<form  action="/results" method="post">
+		<input type="text" name="blogname">
+		<input type="submit" name="Submit">
+		</form>
+
+{% endblock %}
